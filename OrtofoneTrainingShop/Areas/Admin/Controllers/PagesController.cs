@@ -27,7 +27,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View(pagesList);
         }
 
-        // GET: Admin/Views/Pages
+        // GET: Admin/Views/Pages/AddPage
         [HttpGet]
         public ActionResult AddPage()
         {
@@ -35,7 +35,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Views/Pages
+        // POST: Admin/Views/Pages/AddPage
         [HttpPost]
         public ActionResult AddPage(PageVM model)
         {
@@ -85,6 +85,31 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             TempData["SM"] = "Dodałeś nową stronę";
 
             return RedirectToAction("AddPage");
+        }
+
+        // GET: Admin/Views/Pages/EditPage
+        [HttpGet]
+        public ActionResult EditPage(int id)
+        {
+            // deklaracja PageVM
+            PageVM model;
+
+            using (Database db = new Database())
+            {
+                // pobieramy stronę z bazy o przekazanym id
+                PageDTO dto = db.Pages.Find(id);
+
+                // sprawdzamy czy taka strona istnieje
+                if (dto == null)
+                {
+                    return Content("Strona nie istnieje");
+                }
+
+                model = new PageVM(dto);
+
+            }
+
+            return View(model);
         }
 
     }
