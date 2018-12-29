@@ -9,7 +9,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 {
     public class PagesController : Controller
     {
-        // GET: Admin/Pages
+        // GET: Admin/Views/Pages
         public ActionResult Index()
         {
             // Deklaracja listy PageVM
@@ -25,6 +25,13 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 
             //zwracamy strony do widoku
             return View(pagesList);
+        }
+
+        // POST: Admin/Views/Pages
+        public ActionResult AddPage()
+        {
+
+            return View();
         }
     }
 }
