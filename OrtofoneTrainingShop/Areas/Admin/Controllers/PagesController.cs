@@ -169,5 +169,31 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return RedirectToAction("EditPage");
         }
 
+
+        // GET: Admin/Views/Pages/Details
+        public ActionResult Details(int id)
+        {
+            //deklaracja PageVM
+            PageVM model;
+
+            using (Database db = new Database())
+            {
+                // pobranie strony o id
+                PageDTO dto = db.Pages.Find(id);
+
+                // sprawdzenie czy strona o takim id istnieje
+                if (dto == null)
+                {
+                    return Content("Strona o podanym id nie istnieje.");
+                }
+                
+                //incjalizacja PageVM
+                model = new PageVM(dto);
+
+            }
+
+            return View(model);
+        }
+
     }
 }
