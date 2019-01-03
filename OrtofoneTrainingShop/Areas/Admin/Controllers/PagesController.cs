@@ -170,7 +170,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
         }
 
 
-        // GET: Admin/Views/Pages/Details
+        // GET: Admin/Views/Pages/Details/id
         public ActionResult Details(int id)
         {
             //deklaracja PageVM
@@ -193,6 +193,27 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+
+        // Post: Admin/Views/Pages/Delete/id
+        public ActionResult Delete(int id)
+        {
+            using (Database db = new Database())
+            {
+                // pobranie strony z bazy do usunięcia
+                PageDTO dto = db.Pages.Find(id);
+
+                // usuwanie wybranej strony z bazy 
+                db.Pages.Remove(dto);
+
+                // Zapis zmian
+
+                db.SaveChanges();
+            }
+
+            // przekierowanie
+            return RedirectToAction("Index");
         }
 
     }
