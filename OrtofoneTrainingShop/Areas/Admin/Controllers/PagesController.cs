@@ -112,5 +112,62 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View(model);
         }
 
+        // Post: Admin/Views/Pages/EditPage
+        [HttpPost]
+        public ActionResult EditPage(PageVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            using (Database db = new Database())
+            {
+                // pobranie id strony
+                int id = model.Id;
+
+                // inicjalizacja slug
+                string slug = "home";
+
+                // pobranie strony do edycji
+                PageDTO dto = db.Pages.Find(id);
+
+                if (model.Slug != "home")
+                {
+                    if (string.IsNullOrWhiteSpace(model.Slug))
+                    {
+                        slug = model.Title.Replace(" ", "-").ToLower();
+                    }
+                    else
+                    {
+                        slug = model.Slug.Replace(" ", "-").ToLower();
+                    }
+                }
+
+
+                // sprawdzamy unikalność strony, adresu
+                if (db.Pages.Where(x => x.Id != id).Any(x => x.Title == model.Title) ||
+                    db.Pages.Where(x => x.Id != id).Any(x => x.Slug == slug))
+                {
+                    ModelState.AddModelError("", "Strona lub adres strony już istnieje");
+                }
+
+                //modyfikacja DTO
+                dto.Title = model.Title;
+                dto.Slug = slug;
+                dto.HasSidebar = model.HasSidebar;
+                dto.Body = model.Body;
+
+                // zapis edytowanej strony do bazt
+                db.SaveChanges();
+            }
+
+            // Ustawienie komunikatu Temp Data
+            TempData["SM"] = "Wyedytowałeś stronę";
+
+            //Redirect 
+            return RedirectToAction("EditPage");
+        }
+
     }
 }
