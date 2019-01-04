@@ -244,5 +244,49 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View();
         }
 
+        // GET: Admin/Pages/EditSidebar
+        [HttpGet]
+        public ActionResult EditSidebar()
+        {
+            // Deklaracja SidebarVM
+            SidebarVM model;
+
+            using (Database db = new Database())
+            {
+                // Pobieramy sidebarDTO
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                // Inicjalizacja modelu
+                model = new SidebarVM(dto);
+            }
+
+
+            return View(model);
+        }
+
+        // POST: Admin/Pages/EditSidebar
+        [HttpPost]
+        public ActionResult EditSidebar(SidebarVM model)
+        {
+            using (Database db = new Database())
+            {
+                // pobieramy SidebarDTO
+
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                // modyfikacja Sidebar
+                dto.Body = model.Body;
+
+                //Zapis na bazie
+                db.SaveChanges();
+            }
+
+            //Ustawiamy komunikat o modyfikacji Sidebar
+            TempData["SM"] = "Zmodyfikowałeś pasek boczny";
+
+            // przekierowanie 
+            return RedirectToAction("EditSidebar");
+        }
+
     }
 }

@@ -5,5 +5,6 @@ namespace OrtofoneTrainingShop.Models.Data
     public class Database : DbContext
     {
         public DbSet <PageDTO> Pages { get; set; }
+        public DbSet<SidebarDTO> Sidebar { get; set; }
     }
 }
