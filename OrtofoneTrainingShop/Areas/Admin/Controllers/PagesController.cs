@@ -9,7 +9,8 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 {
     public class PagesController : Controller
     {
-        // GET: Admin/Views/Pages
+        // GET: Admin/Pages
+        [HttpGet]
         public ActionResult Index()
         {
             // Deklaracja listy PageVM
@@ -27,7 +28,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View(pagesList);
         }
 
-        // GET: Admin/Views/Pages/AddPage
+        // GET: Admin/Pages/AddPage
         [HttpGet]
         public ActionResult AddPage()
         {
@@ -35,7 +36,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Views/Pages/AddPage
+        // POST: Admin/Pages/AddPage
         [HttpPost]
         public ActionResult AddPage(PageVM model)
         {
@@ -87,7 +88,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return RedirectToAction("AddPage");
         }
 
-        // GET: Admin/Views/Pages/EditPage
+        // GET: Admin/Pages/EditPage
         [HttpGet]
         public ActionResult EditPage(int id)
         {
@@ -112,7 +113,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             return View(model);
         }
 
-        // Post: Admin/Views/Pages/EditPage
+        // Post: Admin/Pages/EditPage
         [HttpPost]
         public ActionResult EditPage(PageVM model)
         {
@@ -170,7 +171,8 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
         }
 
 
-        // GET: Admin/Views/Pages/Details/id
+        // GET: Admin/Pages/Details/id
+        [HttpGet]
         public ActionResult Details(int id)
         {
             //deklaracja PageVM
@@ -196,7 +198,8 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
         }
 
 
-        // Post: Admin/Views/Pages/Delete/id
+        // GET: Admin/Pages/Delete/id
+        [HttpGet]
         public ActionResult Delete(int id)
         {
             using (Database db = new Database())
@@ -214,6 +217,31 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 
             // przekierowanie
             return RedirectToAction("Index");
+        }
+
+        // Post: Admin/Pages/EditPage
+        [HttpPost]
+        public ActionResult ReorderPages(int[] id)
+        {
+            using (Database db = new Database())
+            {
+                int count = 1;
+                PageDTO dto;
+
+                // sortowanie stron zapis na bazie
+
+                foreach (var pageId in id)
+                {
+                    dto = db.Pages.Find(pageId);
+                    dto.Sorting = count;
+
+                    db.SaveChanges();
+                    count++;
+                }
+            }
+
+
+            return View();
         }
 
     }
