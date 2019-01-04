@@ -1,4 +1,5 @@
-﻿using OrtofoneTrainingShop.Models.Data;
+﻿using System.Web.Mvc;
+using OrtofoneTrainingShop.Models.Data;
 
 namespace OrtofoneTrainingShop.Models.ViewModels.Pages
 {
@@ -17,6 +18,8 @@ namespace OrtofoneTrainingShop.Models.ViewModels.Pages
 
 
         public int Id { get; set; }
+
+        [AllowHtml]
         public string Body { get; set; }
     }
 }
