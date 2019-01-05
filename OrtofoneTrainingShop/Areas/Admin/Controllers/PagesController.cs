@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web.Mvc;
-using OrtofoneTrainingShop.Models.Data;
+﻿using OrtofoneTrainingShop.Models.Data;
 using OrtofoneTrainingShop.Models.ViewModels.Pages;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 {
