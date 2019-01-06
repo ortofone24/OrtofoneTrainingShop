@@ -7,9 +7,9 @@
 <h2>Sklep kategorie</h2>
 
 <div class="new-cat">
-    <input type="text" id="newCatName" />
+    <input type="text" id="newcatname" />
     <p>
-        <a href="#" id="newCata">Dodaj nową kategorię</a>
+        <a href="#" id="newcata">Dodaj nową kategorię</a>
         <span class="ajax-text">
             <img src="~/Content/img/ajax-loader.gif" />
         </span>
@@ -22,7 +22,7 @@
 }
 else
 {
-    <table class="table sorting" id="pages">
+    <table class="table sorting categories" id="pages">
         <tr class="home">
             <th>
                 @Html.DisplayNameFor(model => model.Name)
@@ -33,9 +33,10 @@ else
 
         @foreach (var item in Model)
         {
-            <tr>
+            <tr id="id_@item.Id">
                 <td>
-                   @Html.EditorFor(modelItem => item.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    <div class="ajaxdivtd"></div>
+                    @Html.EditorFor(modelItem => item.Name, new {htmlAttributes = new {@class = "form-control", @readonly = "readonly"}})
                 </td>
 
                 <td>
@@ -113,7 +114,7 @@ else
 
                                 newCatTextInput.val("");
 
-                                var toAppend = $("table#pages tbody tr:last").clone;
+                                var toAppend = $("table#pages tbody tr:last").clone();
                                 toAppend.attr("id", "id_" + data);
                                 toAppend.find("#item_Name").val(catName);
                                 toAppend.find("a.delete").attr("href", "/admin/shop/DeleteCategory/" + data);
