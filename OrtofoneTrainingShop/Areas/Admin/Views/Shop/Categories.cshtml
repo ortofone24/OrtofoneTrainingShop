@@ -36,7 +36,7 @@ else
             <tr id="id_@item.Id">
                 <td>
                     <div class="ajaxdivtd"></div>
-                    @Html.EditorFor(modelItem => item.Name, new {htmlAttributes = new {@class = "form-control", @readonly = "readonly"}})
+                    @Html.EditorFor(modelItem => item.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                 </td>
 
                 <td>
@@ -50,28 +50,28 @@ else
 
 
 @section scripts {
-    
+
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
-    
+
     <script>
-        $(function() {
+        $(function () {
 
             /*
-            * Dodawanie nowej kategorii
-            */
+             * Dodawanie nowej kategorii
+             */
 
             var newCatA = $("a#newcata");
             var newCatTextInput = $("#newcatname");
             var ajaxText = $("span.ajax-text");
             var table = $("table#pages tbody");
 
-            newCatTextInput.keyup(function(e) {
+            newCatTextInput.keyup(function (e) {
                 if (e.keyCode == 13) {
                     newCatA.click();
                 }
             });
 
-            newCatA.click(function(e) {
+            newCatA.click(function (e) {
                 e.preventDefault();
 
                 var catName = newCatTextInput.val();
@@ -87,29 +87,29 @@ else
 
                 $.post(url,
                     { catName: catName },
-                    function(data) {
+                    function (data) {
 
                         var response = data.trim();
 
                         if (response == "tytulzajety") {
                             ajaxText.html("<span class='alert alert-danger'> Ten tytuł już jest zajęty! </span>");
-                            setTimeout(function() {
-                                    ajaxText.fadeOut("fast",
-                                        function() {
-                                            ajaxText.html("<img src=/Content/img/ajax-loader.gif/>");
-                                        });
-                                },2000);
+                            setTimeout(function () {
+                                ajaxText.fadeOut("fast",
+                                    function () {
+                                        ajaxText.html("<img src=/Content/img/ajax-loader.gif/>");
+                                    });
+                            }, 2000);
                             return false;
                         } else {
                             if (!$("table#pages").length) {
                                 location.reload();
                             } else {
                                 ajaxText.html("<span class='alert alert-success'>Kategoria została dodana! </span>");
-                                setTimeout(function() {
-                                        ajaxText.fadeOut("fast",
-                                            function() {
-                                                ajaxText.html("<img src=/Content/img/ajax-loader.gif/>");
-                                            });
+                                setTimeout(function () {
+                                    ajaxText.fadeOut("fast",
+                                        function () {
+                                            ajaxText.html("<img src=/Content/img/ajax-loader.gif/>");
+                                        });
                                 }, 2000);
 
                                 newCatTextInput.val("");
@@ -126,16 +126,47 @@ else
                     });
 
             });
-
             /////////////////////////////////////////////
 
 
             /*
-            * Dodawanie nowej kategorii
+             * Sortowanie kategorii
+             */
+
+            $("table#pages tbody").sortable({
+                items: "tr:not(.home)",
+                placeholder: "ui-state-highlight",
+                update: function () {
+                    var ids = $("table#pages tbody").sortable("serialize");
+                    var url = "/admin/shop/ReorderCategories";
+
+
+                    $.post(url,
+                        ids,
+                        function (data) {
+
+                        });
+                }
+            });
+            /////////////////////////////////////////////
+
+
+           /*
+            * Potwierdzenie Usuwania kategorii
             */
+
+            $("body").on("click",
+                "a.delete",
+                function () {
+                    if (!confirm("Potwierdź usunięcie kategorii")) {
+                        return false;
+                    }
+                    });
 
 
             /////////////////////////////////////////////
+
+
         });
     </script>
 

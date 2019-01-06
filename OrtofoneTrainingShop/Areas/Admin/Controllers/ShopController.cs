@@ -59,5 +59,55 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             }
             return id;
         }
+
+        // POST: Admin/Shop/ReorderCategories
+        [HttpPost]
+        public ActionResult ReorderCategories(int[] id)
+        {
+            //db contekst
+            using (Database db = new Database())
+            {
+                // inicjalizacja licznika count
+                int count = 1;
+
+                // deklaracja DTO
+                CategoryDTO dto;
+
+                // sortowanie kategorii
+                foreach (var catId in id)
+                {
+                    // przypisanie do dto idiki z bazy
+                    dto = db.Categories.Find(catId);
+                    dto.Sorting = count;
+
+
+                    // zapis na bazie
+                    db.SaveChanges();
+                    count++;
+                }
+            }
+            
+            return View();
+        }
+
+        //GET: Admin/Shop/DeleteCategory
+        [HttpGet]
+        public ActionResult DeleteCategory(int id)
+        {
+            //kontekst
+            using (Database db = new Database())
+            {
+                //pobieramy kategorię do usunięcia o podanym id
+                CategoryDTO dto = db.Categories.Find(id);
+
+                //usuwanie kategorie
+                db.Categories.Remove(dto);
+
+                // zapis na bazie
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Categories");
+        }
     }
 }
