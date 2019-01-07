@@ -1,8 +1,9 @@
-﻿using OrtofoneTrainingShop.Models.ViewModels.Shop;
+﻿using OrtofoneTrainingShop.Models.Data;
+using OrtofoneTrainingShop.Models.ViewModels.Shop;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
-using OrtofoneTrainingShop.Models.Data;
 
 
 namespace OrtofoneTrainingShop.Areas.Admin.Controllers
@@ -86,7 +87,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
                     count++;
                 }
             }
-            
+
             return View();
         }
 
@@ -148,11 +149,74 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             // pobieramy liste kategorii z dbkontekstu
             using (Database db = new Database())
             {
-                model.Categories = new SelectList(db.Categories.ToList(),"Id", "Name");
+                model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
             }
 
 
             return View(model);
+        }
+
+        //Post: Admin/Shop/AddProduct
+        [HttpPost]
+        public ActionResult AddProduct(ProductVM model, HttpPostedFileBase file)
+        {
+            //sprawdzamy model state
+            if (!ModelState.IsValid)
+            {
+                //kontekst
+                using (Database db = new Database())
+                {
+                    model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    return View(model);
+                }
+            }
+
+
+            // sprawdzenie czy nazwa produktu jest unikalna
+            //kontekst
+            using (Database db = new Database())
+            {
+                if (db.Products.Any(x => x.Name == model.Name))
+                {
+                    model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    ModelState.AddModelError("", "Ta nazwa produktu jest zajęta");
+                    return View(model);
+                }
+            }
+
+            //deklaracja prductId
+            int id;
+
+            // dodawanie produktu i zapis na bazie
+            using (Database db = new Database())
+            {
+                ProductDTO product = new ProductDTO();
+                product.Name = model.Name;
+                product.Slug = model.Name.Replace(" ", "-").ToLower();
+                product.Description = model.Description;
+                product.Price = model.Price;
+                product.CategoryId = model.CategoryId;
+
+                CategoryDTO catDto = db.Categories.FirstOrDefault(x => x.Id == model.CategoryId);
+                product.CategoryName = catDto.Name;
+
+                db.Products.Add(product);
+                db.SaveChanges();
+
+                // pobranie id dodanego produktu
+                id = product.Id;
+            }
+
+            //ustawiamy komunikat 
+            TempData["SM"] = "Dodałeś produkt";
+
+            #region Upload Image
+
+            
+
+            #endregion
+
+            return View();
         }
     }
 }
