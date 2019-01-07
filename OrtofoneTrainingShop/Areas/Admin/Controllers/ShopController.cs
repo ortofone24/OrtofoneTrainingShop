@@ -136,5 +136,23 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             }
             return "Ok";
         }
+
+
+        //GET: Admin/Shop/AddProduct
+        [HttpGet]
+        public ActionResult AddProduct()
+        {
+            // Inicjalizacja modelu
+            ProductVM model = new ProductVM();
+
+            // pobieramy liste kategorii z dbkontekstu
+            using (Database db = new Database())
+            {
+                model.Categories = new SelectList(db.Categories.ToList(),"Id", "Name");
+            }
+
+
+            return View(model);
+        }
     }
 }
