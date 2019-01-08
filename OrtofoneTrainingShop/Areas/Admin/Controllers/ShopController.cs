@@ -1,5 +1,4 @@
-﻿using System;
-using OrtofoneTrainingShop.Models.Data;
+﻿using OrtofoneTrainingShop.Models.Data;
 using OrtofoneTrainingShop.Models.ViewModels.Shop;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using PagedList;
 
 
 namespace OrtofoneTrainingShop.Areas.Admin.Controllers
@@ -220,7 +220,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 
             var pathString1 = Path.Combine(originalDirectory.ToString(), "Products");
             var pathString2 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString());
-            var pathString3 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() +"\\Thumbs");
+            var pathString3 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Thumbs");
             var pathString4 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery");
             var pathString5 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs");
 
@@ -298,6 +298,42 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             #endregion
 
             return RedirectToAction("AddProduct");
+        }
+
+
+        //GET: Admin/Shop/Products
+        [HttpGet]
+        public ActionResult Products(int? page, int? catId)
+        {
+            // deklaracja listy productVM
+            List<ProductVM> listOfProductVM;
+
+            //ustawiamy numer strony
+            var pageNumber = page ?? 1;
+
+            //kontekst
+            using (Database db = new Database())
+            {
+                // inicjalizacja listy produktów
+
+                listOfProductVM = db.Products.ToArray()
+                                    .Where(x => catId == null || catId == 0 || x.CategoryId == catId)
+                                    .Select(x => new ProductVM(x))
+                                    .ToList();
+
+                // lista kategorii do dropdownlist
+                ViewBag.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+
+                // ustawiamy wybraną kategorie
+                ViewBag.SelectedCat = catId.ToString();
+            }
+
+            //ustawienie stronicowania
+            var onePageOfProducts = listOfProductVM.ToPagedList(pageNumber, 3);
+            ViewBag.OnePageOfProducts = onePageOfProducts;
+
+            //zwracamy widok z listą produktów
+            return View(listOfProductVM);
         }
     }
 }
