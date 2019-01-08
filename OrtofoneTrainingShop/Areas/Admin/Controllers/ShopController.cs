@@ -335,5 +335,42 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
             //zwracamy widok z listą produktów
             return View(listOfProductVM);
         }
+
+
+        //GET: Admin/Shop/EditProduct
+        [HttpGet]
+        public ActionResult EditProduct(int id)
+        {
+            // deklaracja productVM
+            ProductVM model;
+
+            using (Database db = new Database())
+            {
+                // pobieramy produkt do edycji
+                ProductDTO dto = db.Products.Find(id);
+
+                //sprawdzenie czy ten produkt wogole istnieje
+                if (dto == null)
+                {
+                    return Content("Ten produkt nie istnieje");
+                }
+
+                //inicjalizacja modelu
+                model = new ProductVM(dto);
+
+                //lista kategorii
+                model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+
+                // ustawiamy zdjecia
+                model.GalleryImages = Directory
+                    .EnumerateFiles(Server.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs"))
+                    .Select(fn => Path.GetFileName(fn));
+            }
+            return View(model);
+        }
+
+            
     }
+
+
 }
