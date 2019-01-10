@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Services.Protocols;
 using PagedList;
 
 
@@ -337,7 +338,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
         }
 
 
-        //GET: Admin/Shop/EditProduct
+        //GET: Admin/Shop/EditProduct/id
         [HttpGet]
         public ActionResult EditProduct(int id)
         {
@@ -367,6 +368,71 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
                     .Select(fn => Path.GetFileName(fn));
             }
             return View(model);
+        }
+
+        //POST: Admin/Shop/EditProduct
+        [HttpPost]
+        public ActionResult EditProduct(ProductVM model, HttpPostedFileBase file)
+        {
+            // pobranie id produktu
+            int id = model.Id;
+
+            // pobranie kategorii dla listy rozwijanej
+            using (Database db = new Database())
+            {
+                model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+            }
+
+            // ustawiamy zdjecia
+            model.GalleryImages = Directory
+                .EnumerateFiles(Server.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs"))
+                .Select(fn => Path.GetFileName(fn));
+
+            // sprawdzamy model state (czy nasz formularz jest poprawnie wypełniony)
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // sprawdzenie unikalności nazwy produktu
+            using (Database db = new Database())
+            {
+                if (db.Products.Where(x => x.Id != id).Any(x => x.Name == model.Name))
+                {
+                    ModelState.AddModelError("", "Ta nazwa produktu jest zajęta");
+                    return View(model);
+                }
+            }
+
+            // Edycja produktu i zapis na bazie
+            using (Database db = new Database())
+            {
+                ProductDTO dto = db.Products.Find(id);
+                dto.Name = model.Name;
+                dto.Slug = model.Name.Replace(" ", "-").ToLower();
+                dto.Description = model.Description;
+                dto.Price = model.Price;
+                dto.CategoryId = model.CategoryId;
+                dto.ImageName = model.ImageName;
+
+                //sprawdzenie nazwy po idku
+                CategoryDTO catDto = db.Categories.FirstOrDefault(x => x.Id == model.CategoryId);
+                dto.CategoryName = catDto.Name;
+
+                db.SaveChanges();
+            }
+
+            // ustawienie TempData
+            TempData["SM"] = "Edytowałeś produkt";
+
+            #region Image Upload
+
+            
+
+            #endregion
+
+
+            return RedirectToAction("EditProduct");
         }
 
             
