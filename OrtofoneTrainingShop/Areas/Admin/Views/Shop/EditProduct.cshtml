@@ -7,7 +7,7 @@
 <h2>Edycja produktu</h2>
 
 <div>
-    @Html.ActionLink("Powrót do produktów", "Index")
+    @Html.ActionLink("Powrót do produktów", "Products")
 </div>
 
 <style>
@@ -24,13 +24,13 @@
 }
 
 
-@using (Html.BeginForm("EditProduct", "Shop", FormMethod.Post, new { enctype = "multipart/from-data" }))
+@using (Html.BeginForm("EditProduct", "Shop", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
 
-        <hr />
+        <hr width="100%"/>
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
 
@@ -88,4 +88,36 @@
     </div>
 }
 
+@section scripts{
+    
+    <script>
 
+        $(function() {
+
+            /*
+             * Wyświetlanie podgladu obrazka
+             */
+
+            function readURL(input) {
+
+                if (input.files && input.files[0]) {
+
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $("img#imgpreview").attr("src", e.target.result).width(200).height(200);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+                
+            }
+
+            $("#ImageUpload").change(function() {
+                readURL(this);
+            });
+        });
+
+    </script>
+
+}
