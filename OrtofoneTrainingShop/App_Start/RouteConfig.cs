@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace OrtofoneTrainingShop
@@ -13,11 +9,20 @@ namespace OrtofoneTrainingShop
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
+            routes.MapRoute("Pages", "{page}", new { controller = "Pages", action = "Index" },
+                new[] { "OrtofoneTrainingShop.Controllers" });
+
+            routes.MapRoute("Default", "", new { controller = "Pages", action = "Index" },
+                new[] { "OrtofoneTrainingShop.Controllers" });
+
+            //routes.MapRoute(
+            //    name: "Default",
+            //    url: "{controller}/{action}/{id}",
+            //    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            //);
+
+
+
         }
     }
 }
