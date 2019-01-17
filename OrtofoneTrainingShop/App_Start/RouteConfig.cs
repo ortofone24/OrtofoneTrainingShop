@@ -9,6 +9,11 @@ namespace OrtofoneTrainingShop
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            
+
+            routes.MapRoute("SidebarPartial", "Pages/SidebarPartial", new { controller = "Pages", action = "SidebarPartial" },
+                new[] { "OrtofoneTrainingShop.Controllers" });
+
             routes.MapRoute("PagesMenuPartial", "Pages/PagesMenuPartial", new { controller = "Pages", action = "PagesMenuPartial" },
                 new[] { "OrtofoneTrainingShop.Controllers" });
 
