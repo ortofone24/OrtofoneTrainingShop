@@ -51,5 +51,25 @@ namespace OrtofoneTrainingShop.Controllers
             // zwracamy widok z modelem pageVM
             return View(model);
         }
+
+        // GET: Index/PagesMenuPartial
+        public ActionResult PagesMenuPartial()
+        {
+            // deklaracja PageVM
+            List<PageVM> pageVMList;
+
+            // pobranie stron
+            using (Database db = new Database())
+            {
+                pageVMList = db.Pages.ToArray().OrderBy(x => x.Sorting)
+                                               .Where(x => x.Slug != "home")
+                                               .Select(x => new PageVM(x)).ToList();
+
+            }
+
+            // zwracamy pageVMList
+            return PartialView(pageVMList);
+        }
+
     }
 }
