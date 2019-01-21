@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -36,6 +37,7 @@ namespace OrtofoneTrainingShop.Controllers
             return PartialView(categoryVMList);
         }
 
+        // GET: /shop/category/name
         public ActionResult Category(string name)
         {
             // deklaracja produkt list view model productVMList
@@ -68,6 +70,49 @@ namespace OrtofoneTrainingShop.Controllers
 
             //zwracamy widok z listą produktów z danej kategorii
             return View(productVMList);
+        }
+
+
+        // GET: /shop/product-szczegoly/name
+        [ActionName("product-szczegoly")]
+        public ActionResult ProductDetails(string name)
+        {
+            // deklaracja pructVM i productDTO
+            ProductVM model;
+            ProductDTO dto;
+
+            // inicjalizacja product Id
+            int id = 0;
+
+            // kontekst
+            using (Database db = new Database())
+            {
+                // sprawdzamy czy produkt istnieje o takiej nazwie z parametru
+                if (!db.Products.Any(x => x.Slug.Equals(name)))
+                {
+                    return RedirectToAction("Index", "Shop");
+                }
+
+                // inicjalizacja produktDTO
+                dto = db.Products
+                        .Where(x => x.Slug == name)
+                        .FirstOrDefault();
+
+                // pobranie id
+
+                id = dto.Id;
+
+                // inicjalizacja modelu przekazywanego do widoku
+                model = new ProductVM(dto);
+            }
+
+            // pobieramy galerie zdjęć dla wybranego produktu
+            model.GalleryImages = Directory
+                                           .EnumerateFiles(Server.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs"))
+                                           .Select(fn => Path.GetFileName(fn));
+
+            // zwracamy widok z modelem
+            return View("ProductDetails", model);
         }
     }
 }

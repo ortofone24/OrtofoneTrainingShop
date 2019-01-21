@@ -23,3 +23,15 @@ table.sorting.categories td {
     position: absolute;
 }
 
+span.loader {
+    display: none;
+}
+
+span.ajaxmsg {
+    display: none;
+    color: white;
+    background: green;
+    padding: 10px;
+    bottom: 0;
+    position: absolute;
+}
