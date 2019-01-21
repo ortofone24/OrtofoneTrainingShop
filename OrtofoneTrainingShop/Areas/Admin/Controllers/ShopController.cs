@@ -526,7 +526,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 
         // POST: Admin/Shop/SaveGalleryImages/id
         [HttpPost]
-        public ActionResult SaveGalleryImages(int id)
+        public void SaveGalleryImages(int id)
         {
             // petla po obrazkach
             foreach (string fileName in Request.Files)
@@ -553,7 +553,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
                     img.Save(path2);
                 }
             }
-            return View();
+            
         }
 
         // POST: Admin/Shop/DeleteImage
