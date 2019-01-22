@@ -1,5 +1,7 @@
-﻿using OrtofoneTrainingShop.Models.ViewModels.Cart;
+﻿using OrtofoneTrainingShop.Models.Data;
+using OrtofoneTrainingShop.Models.ViewModels.Cart;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace OrtofoneTrainingShop.Controllers
@@ -28,7 +30,7 @@ namespace OrtofoneTrainingShop.Controllers
             }
 
             ViewBag.GrandTotal = total;
-            
+
             return View(cart);
         }
 
@@ -59,6 +61,59 @@ namespace OrtofoneTrainingShop.Controllers
                 qty = 0;
                 price = 0m;
             }
+
+            return PartialView(model);
+        }
+
+        public ActionResult AddToCartPartial(int id)
+        {
+            // Inicjalizacja CartVM List
+            List<CartVM> cart = Session["cart"] as List<CartVM> ?? new List<CartVM>();
+
+            // Inicjalizacja cartVM
+            CartVM model = new CartVM();
+
+            using (Database db = new Database())
+            {
+                // pobieramy produkt który chcemy dodać do koszyka
+                ProductDTO product = db.Products.Find(id);
+
+                // sprawdzamy czy produkt nie znajduje się już w koszyku
+                var productInCart = cart.FirstOrDefault(x => x.ProductId == id);
+
+                // w zależności od tego czy produkt jest w koszyku go dodajemy lub zwiekszamy ilosc
+                if (productInCart == null)
+                {
+                    cart.Add(new CartVM()
+                    {
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        Quantity = 1,
+                        Price = product.Price,
+                        Image = product.ImageName
+                    });
+                }
+                else
+                {
+                    productInCart.Quantity++;
+                }
+            }
+
+            // pobieramy całkowite wartość ilości i ceny i dodajemy do modelu
+            int qty = 0;
+            decimal price = 0m;
+
+            foreach (var item in cart)
+            {
+                qty += item.Quantity;
+                price += item.Quantity * item.Price;
+            }
+
+            model.Quantity = qty;
+            model.Price = price;
+
+            // zapis w sesji
+            Session["cart"] = cart;
 
             return PartialView(model);
         }
