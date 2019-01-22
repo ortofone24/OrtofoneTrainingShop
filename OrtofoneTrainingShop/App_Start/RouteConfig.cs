@@ -11,6 +11,9 @@ namespace OrtofoneTrainingShop
 
 
 
+            routes.MapRoute("Cart", "Cart/{action}/{id}", new { controller = "Cart", action = "Index", id = UrlParameter.Optional },
+                new[] { "OrtofoneTrainingShop.Controllers" });
+
             routes.MapRoute("Shop", "Shop/{action}/{name}", new { controller = "Shop", action = "Index", name = UrlParameter.Optional },
                 new[] { "OrtofoneTrainingShop.Controllers" });
 
