@@ -11,6 +11,22 @@ namespace OrtofoneTrainingShop.Controllers
         // GET: Account
         public ActionResult Index()
         {
+
+            return Redirect("~/account/login");
+        }
+
+        // GET: /account/login
+        public ActionResult Login()
+        {
+            // sprawdzanie czy uzytkownik nie jest juz zalogowany
+            string userName = User.Identity.Name;
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("user-profile");
+            }
+
+            // zwracamy widok logowania
             return View();
         }
 
@@ -22,5 +38,6 @@ namespace OrtofoneTrainingShop.Controllers
 
             return View("CreateAccount");
         }
+        
     }
 }
