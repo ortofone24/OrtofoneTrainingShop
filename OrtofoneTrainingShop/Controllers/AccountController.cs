@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OrtofoneTrainingShop.Models.Data;
+using OrtofoneTrainingShop.Models.ViewModels.Account;
 using System.Linq;
-using System.Net.Mail;
-using OrtofoneTrainingShop.Models.Data;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using OrtofoneTrainingShop.Models.ViewModels.Account;
 
 
 namespace OrtofoneTrainingShop.Controllers
@@ -67,7 +63,7 @@ namespace OrtofoneTrainingShop.Controllers
                 }
 
             }
-            
+
         }
 
         // GET: /account/create-account/
@@ -141,9 +137,9 @@ namespace OrtofoneTrainingShop.Controllers
 
             //TempData komunikat
             TempData["SM"] = "Jesteś teraz zarejestrowany i możesz się zalogować!";
-        
-            
-        return Redirect("~/account/login");
+
+
+            return Redirect("~/account/login");
         }
 
 
@@ -154,6 +150,29 @@ namespace OrtofoneTrainingShop.Controllers
 
             return Redirect("~/account/login");
         }
-        
+
+        public ActionResult UserNavPartial()
+        {
+            // pobieramy user name
+            string username = User.Identity.Name;
+
+            // deklarujemy model
+            UserNavPartialVM model;
+
+            using (Database db = new Database())
+            {
+                // pobieramy uzytkownika
+                UserDTO dto = db.Users.FirstOrDefault(x => x.UserName == username);
+
+                model = new UserNavPartialVM()
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName
+                };
+            }
+
+            return PartialView(model);
+        }
+
     }
 }
