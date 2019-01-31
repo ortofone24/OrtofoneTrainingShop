@@ -197,5 +197,63 @@ namespace OrtofoneTrainingShop.Controllers
             return View("UserProfile", model);
         }
 
+        // POST: /account/user-profile
+        [ActionName("user-profile")]
+        [HttpPost]
+        public ActionResult UserProfile(UserProfileVM model)
+        {
+            // sprawdzenie modelstate
+            if (!ModelState.IsValid)
+            {
+                return View("UserProfile", model);
+            }
+
+            // sprawdzamy hasla
+            if (!string.IsNullOrWhiteSpace(model.Password))
+            {
+                if (!model.Password.Equals(model.ConfirmPassword))
+                {
+                    ModelState.AddModelError("", "Hasła nie pasują do siebie!");
+                    return View("UserProfile", model);
+                }
+            }
+
+            // kontekst
+            using (Database db = new Database())
+            {
+                // pobieramy nazwę użytkownika
+                string username = User.Identity.Name;
+
+                // sprawdzenie czy nazwa uzytkownika jest unikalna
+                if (db.Users.Where(x => x.Id != model.Id).Any(x => x.UserName == username))
+                {
+                    ModelState.AddModelError("", "Nazwa uzytkownika " + model.UserName +  " zajeta");
+                    model.UserName = "";
+                    return View("UserProfile", model);
+                }
+                
+                // edycja DTO
+                UserDTO dto = db.Users.Find(model.Id);
+                dto.FirstName = model.FirstName;
+                dto.LastName = model.LastName;
+                dto.EmailAddress = model.EmailAddress;
+                dto.UserName = model.UserName;
+
+                // jeśli haslo nie jest puste lub nie posiada białych znaków
+                if (!string.IsNullOrWhiteSpace(model.Password))
+                {
+                    dto.Password = model.Password;
+                }
+
+                // zapis
+                db.SaveChanges();
+            }
+
+            // ustawienie komunikatu zmiennej TEMP DATA
+            TempData["SM"] = "Edytowałeś swój profil";
+
+            // na koniec przekierowanie 
+            return Redirect("~/account/user-profile");
+        }
     }
 }
