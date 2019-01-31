@@ -174,5 +174,28 @@ namespace OrtofoneTrainingShop.Controllers
             return PartialView(model);
         }
 
+        // GET: /account/user-profile
+        [ActionName("user-profile")]
+        [HttpGet]
+        public ActionResult UserProfile()
+        {
+            //pobieramy nazwę użytkownika
+            string username = User.Identity.Name;
+
+            // deklarujemy model
+            UserProfileVM model;
+
+            // kontekst
+            using (Database db = new Database())
+            {
+                // pobieramy użytkownika
+                UserDTO dto = db.Users.FirstOrDefault(x => x.UserName == username);
+
+                model = new UserProfileVM(dto);
+            }
+
+            return View("UserProfile", model);
+        }
+
     }
 }
