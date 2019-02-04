@@ -85,7 +85,7 @@ else
         <form class="paypalform" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
             <input type="hidden" name="cmd" value="_cart">
             <input type="hidden" name="upload" value="1">
-            <input type="hidden" name="personal" value="ortofone24@gmail.com">
+            <input type="hidden" name="business" value="marcinsolidworks@gmail.com">
 
             @foreach (var item in Model)
             {
@@ -191,14 +191,14 @@ else
 
 
                     }).done(function (data) {
-                    var url2 = "/cart/PaypalPartial";
+                        var url2 = "/cart/PaypalPartial";
 
-                    $.get(url2, {},
-                        function (data) {
-                            $('div.paypaldiv').html(data);
-                        });
+                        $.get(url2, {},
+                            function (data) {
+                                $('div.paypaldiv').html(data);
+                            });
 
-                });;
+                    });;
             });
             //////////////////////////////////////////////////////////////////////
 
@@ -216,6 +216,28 @@ else
 
                     function (data) {
                         location.reload();
+                    });
+            });
+            //////////////////////////////////////////////////////////////////////
+
+            /*
+             * Składanie zamówienia
+             */
+            $("a.placeorder").click(function (e) {
+
+                e.preventDefault();
+                var $this = $(this);
+
+                var url = "/cart/PlaceOrder";
+                $(".ajaxbg").show();
+                
+
+                $.post(url, {},
+                    function (data) {
+                        $(".ajaxbg span").text("Dziękuję. Zostaniesz teraz przekierowany do systemu PayPal.");
+                        setTimeout(function() {
+                            $('form input[name="submit"]').click();
+                        }, 2000);
                     });
             });
             //////////////////////////////////////////////////////////////////////

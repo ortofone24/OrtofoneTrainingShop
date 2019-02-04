@@ -1,7 +1,10 @@
-﻿using OrtofoneTrainingShop.Models.Data;
+﻿using System;
+using OrtofoneTrainingShop.Models.Data;
 using OrtofoneTrainingShop.Models.ViewModels.Cart;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Web.Mvc;
 
 namespace OrtofoneTrainingShop.Controllers
@@ -182,6 +185,67 @@ namespace OrtofoneTrainingShop.Controllers
             List<CartVM> cart = Session["cart"] as List<CartVM>;
 
             return PartialView(cart);
+        }
+
+
+        [HttpPost]
+        public void PlaceOrder()
+        {
+            // pobieranie zawartości koszyka ze zmiennej sesji
+            List<CartVM> cart = Session["cart"] as List<CartVM>;
+
+            // pobranie nazwy użytkownika
+            string username = User.Identity.Name;
+
+            // deklaracja orderId numer zamówienia
+            int orderId = 0;
+
+            // db kontekst
+            using (Database db = new Database())
+            {
+                // incijalizacja orderDTO
+                OrderDTO orderDTO = new OrderDTO();
+
+                // pobieramy user id
+                var user = db.Users.FirstOrDefault(x => x.UserName == username);
+                int userId = user.Id;
+
+                // ustawienie orderDTO i zapis
+                orderDTO.UserId = userId;
+                orderDTO.CreatedAt = DateTime.Now;
+
+                db.Orders.Add(orderDTO);
+                db.SaveChanges();
+
+                // pobieramy id zapisanego zamowienia
+                orderId = orderDTO.OrderId;
+
+                // inicjalizacja OrderDetailsDTO
+                OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+
+                foreach (var item in cart)
+                {
+                    orderDetailsDTO.OrderId = orderId;
+                    orderDetailsDTO.UserId = userId;
+                    orderDetailsDTO.ProductId = item.ProductId;
+                    orderDetailsDTO.Quantity = item.Quantity;
+
+                    db.OrderDetails.Add(orderDetailsDTO);
+                    db.SaveChanges();
+                }
+
+            }
+
+            // wysyłanie emaila do admina
+            var client = new SmtpClient("smtp.mailtrap.io", 2525)
+            {
+                Credentials = new NetworkCredential("f410ef8f76e72e", "f7615c1fd678ee"),
+                EnableSsl = true
+            };
+            client.Send("admin@example.com", "admin@example.com", "Nowe zamowienie", "Masz nowe zamowienie. Numer zamowienia: " + orderId);
+
+            // reset session
+            Session["cart"] = null;
         }
 
     }
