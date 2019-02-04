@@ -176,5 +176,13 @@ namespace OrtofoneTrainingShop.Controllers
             cart.Remove(model);
         }
 
+        public ActionResult PaypalPartial()
+        {
+            // Inicjalizacja listy CartVM
+            List<CartVM> cart = Session["cart"] as List<CartVM>;
+
+            return PartialView(cart);
+        }
+
     }
 }
