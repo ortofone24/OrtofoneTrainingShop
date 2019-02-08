@@ -14,11 +14,11 @@ namespace OrtofoneTrainingShop.Models.ViewModels.Shop
         {
             OrderId = row.OrderId;
             UserId = row.UserId;
-            CreateAt = row.CreatedAt;
+            CreatedAt = row.CreatedAt;
         }
 
         public int OrderId { get; set; }
         public int UserId { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

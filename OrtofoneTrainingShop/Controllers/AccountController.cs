@@ -76,9 +76,7 @@ namespace OrtofoneTrainingShop.Controllers
 
             return View("CreateAccount");
         }
-
-
-
+        
         // POST: /account/actionname/
         [ActionName("create-account")]
         [HttpPost]
@@ -146,6 +144,7 @@ namespace OrtofoneTrainingShop.Controllers
 
 
         // GET: /account/logout
+        [Authorize]
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
@@ -153,6 +152,7 @@ namespace OrtofoneTrainingShop.Controllers
             return Redirect("~/account/login");
         }
 
+        [Authorize]
         public ActionResult UserNavPartial()
         {
             // pobieramy user name
@@ -179,6 +179,7 @@ namespace OrtofoneTrainingShop.Controllers
         // GET: /account/user-profile
         [ActionName("user-profile")]
         [HttpGet]
+        [Authorize]
         public ActionResult UserProfile()
         {
             //pobieramy nazwę użytkownika
@@ -202,6 +203,7 @@ namespace OrtofoneTrainingShop.Controllers
         // POST: /account/user-profile
         [ActionName("user-profile")]
         [HttpPost]
+        [Authorize]
         public ActionResult UserProfile(UserProfileVM model)
         {
             // sprawdzenie modelstate
@@ -259,6 +261,7 @@ namespace OrtofoneTrainingShop.Controllers
         }
 
         // GET: /account/orders
+        [Authorize(Roles="User")]
         public ActionResult Orders()
         {
             // inicjalizacja listy zamowien dla uzytkownika
@@ -307,7 +310,7 @@ namespace OrtofoneTrainingShop.Controllers
                         OrderNumber = order.OrderId,
                         Total = total,
                         ProductsAndQty = productsAndQty,
-                        CreatedAt = order.CreateAt
+                        CreatedAt = order.CreatedAt
                     });
                 }
             }

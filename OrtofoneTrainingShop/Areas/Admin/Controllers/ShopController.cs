@@ -13,6 +13,7 @@ using PagedList;
 
 namespace OrtofoneTrainingShop.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ShopController : Controller
     {
         // GET: Admin/Shop/Categories
@@ -631,7 +632,7 @@ namespace OrtofoneTrainingShop.Areas.Admin.Controllers
                         UserName = username,
                         Total = total,
                         ProductsAndQty = productsAndQty,
-                        CreatedAt = order.CreateAt
+                        CreatedAt = order.CreatedAt
                     });
                 }
             }
