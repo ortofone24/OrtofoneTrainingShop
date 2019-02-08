@@ -1,8 +1,10 @@
-﻿using OrtofoneTrainingShop.Models.Data;
+﻿using System.Collections.Generic;
+using OrtofoneTrainingShop.Models.Data;
 using OrtofoneTrainingShop.Models.ViewModels.Account;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
+using OrtofoneTrainingShop.Models.ViewModels.Shop;
 
 
 namespace OrtofoneTrainingShop.Controllers
@@ -255,5 +257,65 @@ namespace OrtofoneTrainingShop.Controllers
             // na koniec przekierowanie 
             return Redirect("~/account/user-profile");
         }
+
+        // GET: /account/orders
+        public ActionResult Orders()
+        {
+            // inicjalizacja listy zamowien dla uzytkownika
+            List<OrdersForUserVM> ordersForUser = new List<OrdersForUserVM>();
+
+            //kontekst
+            using (Database db = new Database())
+            {
+                // pobieramy id uzytkownika
+                UserDTO user = db.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+                int userId = user.Id;
+
+                // pobieramy zamówienie dla użytkownika
+                List<OrderVM> orders = db.Orders.Where(x => x.UserId == userId).ToArray().Select(x => new OrderVM(x))
+                    .ToList();
+
+                foreach (var order in orders)
+                {
+                    // inicjalizacja słownika produktów
+                    Dictionary<string, int> productsAndQty = new Dictionary<string, int>();
+                    decimal total = 0m;
+
+                    // pobieramy szczegóły zamówienia
+                    List<OrderDetailsDTO> orderDetailsDTO =
+                        db.OrderDetails.Where(x => x.OrderId == order.OrderId).ToList();
+
+                    foreach (var orderDetails in orderDetailsDTO)
+                    {
+                        // pobieramy produkt
+                        ProductDTO product = db.Products.Where(x => x.Id == orderDetails.ProductId).FirstOrDefault();
+
+                        // pobieramy cene
+                        decimal price = product.Price;
+
+                        // pobieramy nazwe
+                        string productName = product.Name;
+
+                        // dodajemy produkt do slownika
+                        productsAndQty.Add(productName, orderDetails.Quantity);
+
+                        total += orderDetails.Quantity * price;
+                    }
+
+                    ordersForUser.Add(new OrdersForUserVM()
+                    {
+                        OrderNumber = order.OrderId,
+                        Total = total,
+                        ProductsAndQty = productsAndQty,
+                        CreatedAt = order.CreateAt
+                    });
+                }
+            }
+
+            
+
+            return View(ordersForUser);
+        }
+
     }
 }
