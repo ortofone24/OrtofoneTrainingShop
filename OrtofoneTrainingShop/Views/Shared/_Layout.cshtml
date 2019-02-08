@@ -72,10 +72,32 @@
     <div class="container body-content">
 
         <div class="row">
+            
+            @if (ViewBag.Title != "Utwórz konto" &&
+                 ViewBag.Title != "Logowanie" &&
+                 ViewBag.Title != "Profil użytkownika" &&
+                 ViewBag.Title != "Zamówienie")
+            {
+                <div class="col-xs-12 col-md-2">
+                    @Html.Action("CategoryMenuPartial", "Shop")
+                </div>
+            }
 
+            
+            
+            @if (ViewBag.Title == "Profil użytkownika")
+            {
             <div class="col-xs-12 col-md-2">
-                @Html.Action("CategoryMenuPartial", "Shop")
+                <li><a href="/account/orders">Moje zamówienia</a></li>
             </div>
+            }
+            
+            @if (ViewBag.Title == "Zamówienie")
+            {
+                <div class="col-xs-12 col-md-2">
+                    <li><a href="/account/user-profile">Mój profil</a></li>
+                </div>
+            }
 
             @if (ViewBag.Sidebar == "Tak")
             {
