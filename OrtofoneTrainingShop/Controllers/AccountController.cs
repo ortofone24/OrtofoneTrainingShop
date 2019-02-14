@@ -176,6 +176,60 @@ namespace OrtofoneTrainingShop.Controllers
             return PartialView(model);
         }
 
+        [Authorize]
+        public ActionResult UserNavPartial2()
+        {
+            // Get username
+            string username = User.Identity.Name;
+
+            // Declare model
+            UserNavPartialVM model;
+
+            using (Database db = new Database())
+            {
+                // Get the user
+                UserDTO dto = db.Users.FirstOrDefault(x => x.UserName == username);
+
+                // Build the model
+                model = new UserNavPartialVM()
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName
+                };
+            }
+
+            // Return partial view with model
+            return PartialView(model);
+        }
+
+        [Authorize]
+        public ActionResult UserNavPartial3()
+        {
+            // Get username
+            string username = User.Identity.Name;
+            string email = string.Empty;
+
+            // Declare model
+            UserNavPartialVM3 model;
+
+            using (Database db = new Database())
+            {
+                // Get the user
+                UserDTO dto = db.Users.FirstOrDefault(x => x.UserName == username);
+
+                // Build the model
+                // Build the model
+                model = new UserNavPartialVM3()
+                {
+                    Email = dto.EmailAddress
+                };
+            }
+
+            // Return partial view with model
+            return PartialView(model);
+        }
+
+
         // GET: /account/user-profile
         [ActionName("user-profile")]
         [HttpGet]
